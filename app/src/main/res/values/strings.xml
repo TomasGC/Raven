@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Raven</string>
+    <string name="overlay_channel_name">Raven overlay</string>
+    <string name="overlay_channel_description">Shows the floating control button while Raven is active</string>
+    <string name="overlay_notification_title">Raven</string>
+    <string name="overlay_notification_content">Ready to solve %1$s</string>
+    <string name="overlay_button_state_paused">Raven overlay button, paused</string>
+    <string name="overlay_button_state_running">Raven overlay button, running</string>
+</resources>

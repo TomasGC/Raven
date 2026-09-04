@@ -1,0 +1,25 @@
+name: Push-CI
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'bugfix/**'
+
+concurrency:
+  group: push-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kotlin-pipeline:
+    uses: TomasGC/condor/.github/workflows/kotlin-push-ci.yml@main
+    secrets: inherit
+    with:
+      app-name: raven
+      unit-job: true
+      mock-job: true
+
+  python-pipeline:
+    uses: TomasGC/condor/.github/workflows/python-push-ci.yml@main
+    with:
+      skip-on-no-changes: true
