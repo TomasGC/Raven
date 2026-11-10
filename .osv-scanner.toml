@@ -99,3 +99,31 @@ name = "org.jetbrains.kotlin:kotlin-gradle-plugin"
 ecosystem = "Maven"
 ignore = true
 reason = "Build-tool dependency, not shipped in APK. GHSA-r937-wjx7-w2jp (CVE-2026-53914, Medium, local-attack-vector-only build-cache deserialization) has no stable fix yet - fix version 2.4.20-Beta1 is a pre-release that breaks Hilt/kapt annotation processing (kotlinx-metadata-jvm version mismatch). Revisit once Kotlin ships a stable 2.4.20+ release and Hilt/Dagger supports its metadata format."
+
+[[PackageOverrides]]
+name = "com.google.guava:guava"
+version = "32.0.1-jre"
+ecosystem = "Maven"
+ignore = true
+reason = "AGP 8.7.3 build tool dependency (the build classpath and the Unified Test Platform host tools), not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew buildEnvironment :app:dependencies on 2026-11-10. GHSA-xxph-c9ww-hj94 (High) is a memory exhaustion when deserializing attacker-controlled streams, which neither the build nor the tests do. Fixed in 33.7.2: drop this entry with the stack update (#10)."
+
+[[PackageOverrides]]
+name = "com.google.guava:guava"
+version = "33.0.0-jre"
+ecosystem = "Maven"
+ignore = true
+reason = "Hilt annotation processor classpath (kapt), build time only, not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew :app:dependencies on 2026-11-10. GHSA-xxph-c9ww-hj94 (High) is a memory exhaustion when deserializing attacker-controlled streams, which neither the build nor the tests do. Fixed in 33.7.2: drop this entry with the stack update (#10)."
+
+[[PackageOverrides]]
+name = "com.google.guava:guava"
+version = "33.3.1-jre"
+ecosystem = "Maven"
+ignore = true
+reason = "Unit-test runtime classpath only (test libraries), not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew :app:dependencies on 2026-11-10. GHSA-xxph-c9ww-hj94 (High) is a memory exhaustion when deserializing attacker-controlled streams, which neither the build nor the tests do. Fixed in 33.7.2: drop this entry with the stack update (#10)."
+
+[[PackageOverrides]]
+name = "org.freemarker:freemarker"
+version = "2.3.32"
+ecosystem = "Maven"
+ignore = true
+reason = "Kover's coverage reporter (intellij-coverage-reporter), test tooling, not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew :app:dependencies on 2026-11-10. GHSA-27j2-h3m2-8237 (Critical, path traversal in template loading) needs an attacker-supplied template path, and only the tool's bundled templates are loaded. Fixed in 2.3.35: drop this entry with the stack update (#10)."
