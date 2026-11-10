@@ -53,19 +53,35 @@
   `:core`/`PuzzleModule` shape before implementation.
 - Apply the same Condor fixes to the sibling project (Otter) — separate
   session/ticket, not done yet.
-- `gradle/verification-metadata.xml` was generated from a cold local Gradle
-  cache on Windows, which happened to be enough to satisfy CI's Linux
-  runner — but it's not guaranteed to stay complete as dependencies change.
-  If OSV Scanner/Kotlin Quality/unit-tests start failing again with
-  "Dependency verification failed", regenerate the same way
-  (`./gradlew --stop` then `--write-verification-metadata sha256
-  --refresh-dependencies --no-daemon clean assembleDebug testDebugUnitTest
-  detekt lintDebug koverXmlReportDebug`) before assuming it's a real bug.
+- `gradle/verification-metadata.xml` holds a checksum per artifact, and AGP's `aapt2` has separate Windows and Linux
+  jars, so it needs both platforms. After a dependency change, empty its `<components>`, rebuild the Windows entries
+  with `./gradlew --write-verification-metadata sha256 --refresh-dependencies clean assembleDebug
+  assembleDebugAndroidTest :app:testDebugUnitTest :core:test :placeholder:test detekt lintDebug koverXmlReportDebug
+  koverHtmlReportDebug pixel4api30Setup`, then add the Linux entries with a throwaway push-triggered Actions job
+  (KVM enabled, same command, uploads the file) on a branch that is not `feature/**`, and commit that file.
+  The old entries must go, because the dependency scan reads this file and stale versions keep being flagged.
 
 **Low priority**
 - Version catalog (`gradle/libs.versions.toml`) instead of inline version
   literals — cost grows with each new solver module, not urgent yet.
-- kapt → KSP migration for Hilt.
+
+---
+
+2026-11-10 - [#10] Update the whole stack to the latest stable, JDK 21 included (with #7, #8, #9)
+- Gradle 9.9.0 (`retries` and a 60 s `networkTimeout`), AGP 9.5.1 with Kotlin built in, Kotlin 2.4.21, Hilt 2.60.1 on KSP
+  instead of kapt, Kover 0.9.11, Compose BOM 2026.09.00, androidx, coroutines 1.11.0, the androidx test set,
+  Robolectric 4.17, the Python test packages and JDK 21; `compileSdk` is 37 and `targetSdk` stays 35, because raising it
+  changes how the overlay behaves on a phone and deserves its own issue
+- CI runs on Condor `v1`: PR-CI on pull requests (#9), Python tests marked by tier (#8), `push-ci.yml` with `unit-tasks`
+  and `app-environments` (#7). Before, Push-CI failed at startup on inputs Condor no longer declares
+- Coverage 97% (41/42 lines) against 95% (41/43) before; the denominator moved with the compiler. Dependency scan:
+  scoped entries for build-tooling Guava and Freemarker, re-check 2026-12-05
+- #7 is not done as written, and `contexts/tests.md` says why: the mock test uses Robolectric (no JVM suite), the
+  instrumented tests are white-box Hilt tests (no `:app-instrumented`), and a separate mock task cost 5 points of
+  coverage because Kover instruments only the variant's own unit-test task
+tags: #ci-cd #condor #upgrade
+Ref: https://github.com/TomasGC/Raven/issues/10
+Commits: f233675, 4f42133, 683ecd0, ccbc4b3, 3419bcf, 6603f10, 11ed480, da92340, aa5dd6e, c495a46
 
 ---
 

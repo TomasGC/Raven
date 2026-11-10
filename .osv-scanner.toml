@@ -99,3 +99,24 @@ name = "org.jetbrains.kotlin:kotlin-gradle-plugin"
 ecosystem = "Maven"
 ignore = true
 reason = "Build-tool dependency, not shipped in APK. GHSA-r937-wjx7-w2jp (CVE-2026-53914, Medium, local-attack-vector-only build-cache deserialization) has no stable fix yet - fix version 2.4.20-Beta1 is a pre-release that breaks Hilt/kapt annotation processing (kotlinx-metadata-jvm version mismatch). Revisit once Kotlin ships a stable 2.4.20+ release and Hilt/Dagger supports its metadata format."
+
+[[PackageOverrides]]
+name = "com.google.guava:guava"
+version = "33.4.0-jre"
+ecosystem = "Maven"
+ignore = true
+reason = "AGP 9.5.1 build classpath and Android lint tool (androidLintTool), build tooling only, not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew buildEnvironment :app:dependencies on 2026-11-10. GHSA-xxph-c9ww-hj94 (High) is a memory exhaustion when deserializing attacker-controlled streams, which neither the build nor the tests do. Fixed in 33.7.2: look again on 2026-12-05 and drop this entry once the tool that brings it ships Guava 33.7.2 or later."
+
+[[PackageOverrides]]
+name = "com.google.guava:guava"
+version = "33.6.0-jre"
+ecosystem = "Maven"
+ignore = true
+reason = "Hilt and KSP annotation processors, the unit-test classpaths and the build classpath, build and test tooling only, not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew buildEnvironment :app:dependencies on 2026-11-10. GHSA-xxph-c9ww-hj94 (High) is a memory exhaustion when deserializing attacker-controlled streams, which neither the build nor the tests do. Fixed in 33.7.2: look again on 2026-12-05 and drop this entry once the tool that brings it ships Guava 33.7.2 or later."
+
+[[PackageOverrides]]
+name = "org.freemarker:freemarker"
+version = "2.3.32"
+ecosystem = "Maven"
+ignore = true
+reason = "Kover 0.9.11's coverage reporter (intellij-coverage-reporter) on the build classpath, build tooling only, not shipped in the APK: absent from the debug and release runtime and compile classpaths, checked with ./gradlew buildEnvironment :app:dependencies on 2026-11-10. GHSA-27j2-h3m2-8237 (Critical, path traversal in template loading) needs an attacker-supplied template path, and only the tool's bundled templates are loaded. Fixed in 2.3.35: look again on 2026-12-05 and drop this entry once Kover ships Freemarker 2.3.35 or later."

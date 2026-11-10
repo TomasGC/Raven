@@ -12,14 +12,16 @@ concurrency:
 
 jobs:
   kotlin-pipeline:
-    uses: TomasGC/condor/.github/workflows/kotlin-push-ci.yml@main
+    uses: TomasGC/Condor/.github/workflows/kotlin-push-ci.yml@v1
     secrets: inherit
     with:
       app-name: raven
-      unit-job: true
-      mock-job: true
+      unit-tasks: '[":core:test", ":placeholder:test", ":app:testDebugUnitTest"]'
+      app-environments: '["android"]'
+      # The instrumented tests are white-box tests of :app (Hilt, MainActivity), so they cannot move to a test module.
+      android-e2e-task: ':app:connectedDebugAndroidTest'
 
   python-pipeline:
-    uses: TomasGC/condor/.github/workflows/python-push-ci.yml@main
+    uses: TomasGC/Condor/.github/workflows/python-push-ci.yml@v1
     with:
       skip-on-no-changes: true
