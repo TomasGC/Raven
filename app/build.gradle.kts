@@ -1,9 +1,8 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("org.jetbrains.kotlinx.kover")
     id("io.gitlab.arturbosch.detekt")
 }
@@ -36,12 +35,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
@@ -59,7 +54,7 @@ android {
         // so `./gradlew pixel4api30Setup` is a real task, letting CI pre-download and cache the
         // system image before creating that manual AVD.
         managedDevices {
-            devices {
+            allDevices {
                 maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel4api30").apply {
                     device = "Pixel 4"
                     apiLevel = 30
@@ -95,8 +90,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
-    implementation("com.google.dagger:hilt-android:2.52")
-    kapt("com.google.dagger:hilt-compiler:2.52")
+    implementation("com.google.dagger:hilt-android:2.60.1")
+    ksp("com.google.dagger:hilt-compiler:2.60.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
@@ -123,15 +118,17 @@ dependencies {
     androidTestImplementation("io.mockk:mockk-android:1.13.12")
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.11.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.52")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.52")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.60.1")
+    kspAndroidTest("com.google.dagger:hilt-android-compiler:2.60.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
-kapt {
-    correctErrorTypes = true
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
 }
 
 detekt {
@@ -168,8 +165,8 @@ afterEvaluate {
     }
 }
 
-koverReport {
-    androidReports("debug") {
+kover {
+    reports {
         filters {
             excludes {
                 classes(
