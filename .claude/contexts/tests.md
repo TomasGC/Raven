@@ -32,6 +32,19 @@ Klondike) introduces something genuinely file/resource-backed at the JVM level. 
 `kotlin-integration-real.yml`) now checks for any `*RealIntegrationTest.kt` file before running
 and skips gracefully if none exist, instead of failing outright.
 
+**Why there are no JVM suites and no `:app-instrumented` module (#7, measured 2026-11-10)**:
+- The only integration-mock test (`OverlayServiceIntegrationTest`) uses Robolectric, so it cannot live in a pure-JVM
+  module, and AGP gives an Android module no test suites. A `Test` task registered over the same classes runs it, but
+  Kover 0.9 instruments only the variant's own `testDebugUnitTest` on Android: coverage fell from 97% to 92% (39/42
+  lines), so the tier is not a separate task. CI runs `:app:testDebugUnitTest`, which runs unit and integration-mock
+  together; the class-name suffix and the directories keep the tiers readable.
+- The instrumented tests are white-box tests of `:app` (`MainActivity`, Hilt, `OverlayService`): a `com.android.test`
+  module cannot put `:app`'s classes on its classpath, so they stay in `:app`'s `androidTest` and CI runs
+  `:app:connectedDebugAndroidTest`.
+- `-DtestType` stays for local tier selection (`manage.py test <tier>`); CI does not pass it.
+- Revisit when a solver module introduces JVM-level tests: then `integrationMock` and `integrationReal` suites in that
+  module are the right place, and Condor's `integration-*-tasks` inputs pick them up.
+
 ---
 
 ## Directory Structure

@@ -18,6 +18,7 @@ jobs:
       app-name: raven
       unit-tasks: '[":core:test", ":placeholder:test", ":app:testDebugUnitTest"]'
       app-environments: '["android"]'
+      # The instrumented tests are white-box tests of :app (Hilt, MainActivity), so they cannot move to a test module.
       android-e2e-task: ':app:connectedDebugAndroidTest'
 
   python-pipeline:
